@@ -18,4 +18,6 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	// Println("Bucket2Go Version ")
 }

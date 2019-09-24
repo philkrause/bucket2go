@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/philkrause/mycli/cmd"
+	"github.com/philkrause/bucket2go/cmd"
 )
 
 func main() {
