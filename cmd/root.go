@@ -8,7 +8,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "bucket2go",
+	Use:   "gobit",
 	Short: "This CLI is used for creating and managing repositories in bitbucket",
 	Long:  "This CLI is used for creating and managing repositories in bitbucket",
 }

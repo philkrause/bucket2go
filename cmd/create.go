@@ -11,45 +11,40 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//Get Env
 var BUCKET_URL, bool = os.LookupEnv("BUCKET_URL")
+
+//create httpClient
 var client = &http.Client{}
 
-type Flags struct {
+type Profile struct {
 	Project  string `json:"project"`
 	Username string `json:"username"`
 }
 
 func init() {
-
+	var p Profile
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "create a repository",
 		Run: func(cmd *cobra.Command, args []string) {
 			createRepo()
 			fmt.Println("Repository Created")
-		},
+			fmt.Printf("%+v", p)
 
-		// createCmd.Flags().StringP(&Repository.Slug, "r", "create.repo", "Set the name of the repo slug")
+		},
 	}
-	flags := Flags{}
+
 	rootCmd.AddCommand(createCmd)
-	createCmd.Flags().StringP(flags.Project, "p", "HAR", "Set the name of the project")
-	createCmd.Flags().StringP(flags.Username, "n", "Dev-Ops", "Set the name of the flags")
+	rootCmd.Flags().StringVarP(&p.Project, "project", "p", "HAR", "Sets the name of the project")
+	rootCmd.Flags().StringVarP(&p.Username, "username", "u", "Dev-Ops", "Sets the username")
 }
 
-// func GetFlags() Flags {
-// 	flags := Flags{}
+func createRepo() *http.Response {
+	var p Profile
 
-// 	flag.StringVar(&flags.Project, "p", "HAR", "Set the name of the project")
-// 	flag.StringVar(&flags.Username, "n", "Dev-Ops", "Set the name of the flags")
-
-// 	return flags
-// }
-
-func createRepo() {
-	var newRepo Flags
-
-	bytesRepresentation, err := json.Marshal(newRepo)
+	//convert json into bytes
+	bytesRepresentation, err := json.Marshal(p)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -61,6 +56,9 @@ func createRepo() {
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("x-event-key", "repo.create")
 
-	client.Do(request)
-
+	response, err := client.Do(request)
+	if err != nil {
+		panic(err)
+	}
+	return response
 }

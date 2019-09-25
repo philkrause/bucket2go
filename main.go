@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/philkrause/bucket2go/cmd"
+	"github.com/philkrause/gobit/cmd"
 )
 
 func main() {
