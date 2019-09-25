@@ -26,7 +26,7 @@ func init() {
 	var p Profile
 	var createCmd = &cobra.Command{
 		Use:   "create",
-		Short: "create a repository",
+		Short: "Create a repository",
 		Run: func(cmd *cobra.Command, args []string) {
 			createRepo()
 			fmt.Println("Repository Created")
@@ -36,8 +36,8 @@ func init() {
 	}
 
 	rootCmd.AddCommand(createCmd)
-	rootCmd.Flags().StringVarP(&p.Project, "project", "p", "HAR", "Sets the name of the project")
-	rootCmd.Flags().StringVarP(&p.Username, "username", "u", "Dev-Ops", "Sets the username")
+	rootCmd.PersistentFlags().StringVarP(&p.Project, "project", "p", "HAR", "Sets the name of the project")
+	rootCmd.PersistentFlags().StringVarP(&p.Username, "username", "n", "Dev-Ops", "Sets the username")
 }
 
 func createRepo() *http.Response {
