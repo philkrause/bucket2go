@@ -9,8 +9,8 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "gobit",
-	Short: "This CLI is used for creating and managing repositories in bitbucket",
-	Long:  "This CLI is used for creating and managing repositories in bitbucket",
+	Short: "gobit version 1.0",
+	Long:  "",
 }
 
 func Execute() {
@@ -18,6 +18,4 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	// Println("Bucket2Go Version ")
 }

@@ -4,55 +4,72 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
-//Get Env
-var BUCKET_URL, bool = os.LookupEnv("BUCKET_URL")
+// var help string = "\n\n\n COMMANDS: \n\n    create:     Will create a new repository based on the flags provided\n           Flags: -p:  project  "
+
+//Profile struct for COMMAND create
+type Profile struct {
+	Project      string `json:"project"`
+	Repository   string `json:"reposlug"`
+	Organization string `json:"organization,omitempty"`
+}
+
+//get Env var
+var bucketURL, bool = os.LookupEnv("BUCKET_URL")
 
 //create httpClient
 var client = &http.Client{}
 
-type Profile struct {
-	Project  string `json:"project"`
-	Username string `json:"username"`
-}
-
 func init() {
 	var p Profile
 	var createCmd = &cobra.Command{
-		Use:   "create",
-		Short: "Create a repository",
+		Use:              "create",
+		TraverseChildren: true,
+		Short:            "Create a repository",
 		Run: func(cmd *cobra.Command, args []string) {
-			createRepo()
-			fmt.Println("Repository Created")
-			fmt.Printf("%+v", p)
+			createRepo(p)
+			fmt.Println("Repository Was Sent")
+			// fmt.Printf("%+v", p)
 
 		},
 	}
-
+	//set COMMAND create
 	rootCmd.AddCommand(createCmd)
-	rootCmd.PersistentFlags().StringVarP(&p.Project, "project", "p", "HAR", "Sets the name of the project")
-	rootCmd.PersistentFlags().StringVarP(&p.Username, "username", "n", "Dev-Ops", "Sets the username")
+	//set Flags
+	rootCmd.PersistentFlags().StringVarP(&p.Organization, "organization", "o", "", "Sets the organization name (optional)")
+	rootCmd.PersistentFlags().StringVarP(&p.Project, "project", "p", "", "Sets the name of the bitbucket project key (required)")
+	rootCmd.PersistentFlags().StringVarP(&p.Repository, "repository", "n", "", "Sets the repository name (required)")
+	//make required flags
+	createCmd.MarkPersistentFlagRequired("repository")
+	createCmd.MarkPersistentFlagRequired("project")
+
+	// rootCmd.SetHelpTemplate(help)
+
 }
 
-func createRepo() *http.Response {
-	var p Profile
+func createRepo(p Profile) *http.Response {
 
-	//convert json into bytes
-	bytesRepresentation, err := json.Marshal(p)
-	if err != nil {
-		log.Fatalln(err)
+	//Convert JSON into bytes
+	profile := new(bytes.Buffer)
+	json.NewEncoder(profile).Encode(p)
+	fmt.Printf("%+v", profile)
+
+	if bucketURL != "" {
+		fmt.Println("\nBitbucket URL is missing...Check your environment variables")
+		os.Exit(1)
 	}
+	fmt.Println("Repo", p.Repository)
 
-	request, err := http.NewRequest("POST", BUCKET_URL, bytes.NewBuffer(bytesRepresentation))
+	request, err := http.NewRequest("POST", bucketURL, profile)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("x-event-key", "repo.create")
 
@@ -60,5 +77,5 @@ func createRepo() *http.Response {
 	if err != nil {
 		panic(err)
 	}
-	return response
+	return (response)
 }
